@@ -1,0 +1,99 @@
+html{
+    min-height: 710px;
+}
+
+table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 190px;
+    text-align: center;
+}
+
+textarea:focus, input:focus{
+    outline: none;
+}
+
+input {
+    font-size: 20px;
+    padding: 5px;
+    vertical-align: top;
+    border-radius: 5px;
+    border: 1px solid grey;
+    margin-bottom: 15px;
+}
+
+button {
+    padding: 5px;
+    vertical-align: top;
+    border-radius: 5px;
+    font-size: 20px;
+    background-color: white;
+    border: 1px solid grey;
+}
+
+#toTider {
+    font-size: 20px;
+    margin-top: -10px;
+    margin-bottom: 5px;
+}
+
+label {
+    font-size: 25px;
+}
+
+#tekst {
+  font-size: 20px;
+  position: relative;
+  top: -7px;
+  
+}
+
+span {
+    font-size: 20px;
+}
+
+.beregninger {
+    margin: 0;
+  	overflow: hidden;
+}
+
+.fleks {
+    float: left;
+    width: 350px;
+    height: 70px;
+}
+
+.afs {
+    float: left;
+    width: 350px;
+    height: 70px;
+    padding-left: 100px;
+}
+
+input[type='radio']:after {
+    width: 15px;
+    height: 15px;
+    border-radius: 15px;
+    top: -4px;
+    left: -1px;
+    position: relative;
+    background-color: #d1d3d1;
+    content: '';
+    display: inline-block;
+    visibility: visible;
+    border: 2px solid white;
+}
+
+input[type='radio']:checked:after {
+    width: 15px;
+    height: 15px;
+    border-radius: 15px;
+    top: -4px;
+    left: -1px;
+    position: relative;
+    background-color: #00a1db;
+    content: '';
+    display: inline-block;
+    visibility: visible;
+    border: 2px solid white;
+}

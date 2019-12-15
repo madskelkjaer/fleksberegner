@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-74364802-7"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag('js', new Date());
+
+    gtag('config', 'UA-74364802-7');
+  </script>
+
+  <meta charset="utf-8">
+  <title>Beregn flekstid!</title>
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans&display=swap" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="stylesheet.css">
+</head>
+
+<body>
+  <h1>Fleks og overarbejdsberegner</h1>
+
+  <p id="toTider">Vælg hvilken afdeling:</p>
+  <label><input id="HRT" type="radio" name="afdeling" value="HRT"> <span id="tekst">HRT/ABT/ART (1 flekstime)</span></label><br>
+  <label><input id="FAT" type="radio" name="afdeling" value="FAT"> <span id="tekst">BRT/KJT/FAT (1,5 flekstime)</span></label>
+  <br><br>
+  <p id="toTider">Indtast planlagt starttid og faktisk starttid:</p>
+  <p style="margin-left: 340px; margin-top: -23.5px; color: grey; margin-bottom: 5px;">Hvis der ikke er ændring, undlad at skrive i felterne.</p>
+  <input style="width:150px;" type="text" id="startStart" placeholder="f.eks. 13,05" maxlength="5"> <label>-</label> <input style="width:150px;" type="text" id="startSlut" onsubmit="tidImellem" placeholder="f.eks. 12,30" maxlength="5">
+  <p id="toTider">Indtast planlagt sluttid og faktisk sluttid:</p>
+  <input style="width:150px;" type="text" id="slutStart" placeholder="f.eks. 20,54" maxlength="5"> <label>-</label> <input style="width:150px;" type="text" id="slutSlut" onsubmit="tidImellem" placeholder="f.eks. 21,04" maxlength="5">
+  <button onclick="tidImellem()">Beregn tid</button>
+  <!--<br>
+  <label><input id="startmidnat" type="checkbox" name="midnat" value="startmidnat"> <span id="tekst">Starttid går over midnat</span></label><br>
+  <label><input id="slutmidnat" type="checkbox" name="midnat" value="slutmidnat"> <span id="tekst">Sluttid går over midnat</span></label>-->
+  <br>
+  <span>Mødetid forskel: </span><span id="timermode">0 timer og </span><span id="minuttermode">0 minutter</span><br>
+  <span>Gåtid forskel: </span><span id="timerImellem">0 timer og </span><span id="minutterImellem">0 minutter</span>
+  <br><br>
+
+  <selection class="beregninger">
+    <div class="fleks">
+      <p id="toTider">Indtast følgende i flekstid og overarbejde:</p>
+      <table>
+        <tr>
+          <th>Flekstid</th>
+          <th>Overarbejde</th>
+        </tr>
+        <tr>
+          <td><span id="fleks">0.00</span></td>
+          <td><span id="overarbejde">0.00</span></td>
+        </tr>
+      </table>
+    </div>
+    <div class="afs">
+      <p id="toTider">Indtast følgende i fravær (KUN til sluttid):</p>
+      <table style="width: 421px; height: 40px;">
+        <tr style="height: 7px;">
+          <th style="width: 136px; height: 7px;" bgcolor="#a3a3a3">Delvist fravær start</td>
+            <th style="width: 136px; height: 7px;" bgcolor="#a3a3a3">Delvist fravær slut</td>
+              <th style="width: 136px; height: 7px;" bgcolor="#a3a3a3">Delvist fravær type</td>
+        </tr>
+        <tr style="height: 23px;">
+          <td style="width: 136px; height: 23px;"><span id="fravaerstart"></span></td>
+          <td style="width: 136px; height: 23px;"><span id="fravaerslut"></span></td>
+          <td style="width: 136px; height: 23px;">AFS/14-6</td>
+        </tr>
+      </table>
+      <br>
+      <p id="toTider">Koder på mødelister:</p>
+      <table style="height: 161px; width: 214px;">
+        <tbody>
+          <tr style="height: 23px;">
+            <th style="height: 23px; width: 46px;" bgcolor="#a3a3a3">Kode</th>
+            <th style="height: 23px; width: 167px;" bgcolor="#a3a3a3">Beskrivelse</th>
+          </tr>
+          <tr style="height: 23px;">
+            <td style="height: 23px; width: 46px;">F1-F8</td>
+            <td style="height: 23px; width: 167px;">Sygdom</td>
+          </tr>
+          <tr style="height: 23px;">
+            <td style="height: 23px; width: 46px;" bgcolor="#dedede">F11</td>
+            <td style="height: 23px; width: 167px;" bgcolor="#dedede">Ferie (FER)</td>
+          </tr>
+          <tr style="height: 23px;">
+            <td style="height: 23px; width: 46px;">F13</td>
+            <td style="height: 23px; width: 167px;">S&aelig;rlig ferie (SFER)</td>
+          </tr>
+          <tr style="height: 23px;">
+            <td style="height: 23px; width: 46px;" bgcolor="#dedede">F21</td>
+            <td style="height: 23px; width: 167px;" bgcolor="#dedede">14-6</td>
+          </tr>
+          <tr style="height: 23px;">
+            <td style="height: 23px; width: 46px;">F25</td>
+            <td style="height: 23px; width: 167px;">Afspadsering (AFS)</td>
+          </tr>
+        </tbody>
+      </table>
+
+    </div>
+  </selection>
+  <br><br><br><br>
+  <h2>Tabel over minutter og decimaltal</h2>
+  <table>
+    <tbody>
+      <tr style="height: 21px;">
+        <td style="height: 21px;" bgcolor="#a3a3a3">Minutter</td>
+        <td style="height: 21px;" bgcolor="#a3a3a3">Decimaler</td>
+        <td style="height: 21px;" bgcolor="#a3a3a3">Minutter</td>
+        <td style="height: 21px;" bgcolor="#a3a3a3">Decimaler</td>
+        <td style="height: 21px;" bgcolor="#a3a3a3">Minutter</td>
+        <td style="height: 21px;" bgcolor="#a3a3a3">Decimaler</td>
+      </tr>
+      <tr style="height: 21px;">
+        <td style="height: 21px;">1</td>
+        <td style="height: 21px;" bgcolor="#dedede">0.02</td>
+        <td style="height: 21px;">21</td>
+        <td style="height: 21px;" bgcolor="#dedede">0.35</td>
+        <td style="height: 21px;">41</td>
+        <td style="height: 21px;" bgcolor="#dedede">0.68</td>
+      </tr>
+      <tr style="height: 21px;">
+        <td style="height: 21px;">2</td>
+        <td style="height: 21px;" bgcolor="#dedede">0.03</td>
+        <td style="height: 21px;">22</td>
+        <td style="height: 21px;" bgcolor="#dedede">0.37</td>
+        <td style="height: 21px;">42</td>
+        <td style="height: 21px;" bgcolor="#dedede">0.70</td>
+      </tr>
+      <tr style="height: 21px;">
+        <td style="height: 21px;">3</td>
+        <td style="height: 21px;" bgcolor="#dedede">0.05</td>
+        <td style="height: 21px;">23</td>
+        <td style="height: 21px;" bgcolor="#dedede">0.38</td>
+        <td style="height: 21px;">43</td>
+        <td style="height: 21px;" bgcolor="#dedede">0.72</td>
+      </tr>
+      <tr style="height: 21px;">
+        <td style="height: 21px;">4</td>
+        <td style="height: 21px;" bgcolor="#dedede">0.07</td>
+        <td style="height: 21px;">24</td>
+        <td style="height: 21px;" bgcolor="#dedede">0.40</td>
+        <td style="height: 21px;">44</td>
+        <td style="height: 21px;" bgcolor="#dedede">0.73</td>
+      </tr>
+      <tr style="height: 21px;">
+        <td style="height: 21px;">5</td>
+        <td style="height: 21px;" bgcolor="#dedede">0.08</td>
+        <td style="height: 21px;">25</td>
+        <td style="height: 21px;" bgcolor="#dedede">0.42</td>
+        <td style="height: 21px;">45</td>
+        <td style="height: 21px;" bgcolor="#dedede">0.75</td>
+      </tr>
+      <tr style="height: 21px;">
+        <td style="height: 21px;">6</td>
+        <td style="height: 21px;" bgcolor="#dedede">0.10</td>
+        <td style="height: 21px;">26</td>
+        <td style="height: 21px;" bgcolor="#dedede">0.43</td>
+        <td style="height: 21px;">46</td>
+        <td style="height: 21px;" bgcolor="#dedede">0.77</td>
+      </tr>
+      <tr style="height: 21.5px;">
+        <td style="height: 21.5px;">7</td>
+        <td style="height: 21.5px;" bgcolor="#dedede">0.12</td>
+        <td style="height: 21.5px;">27</td>
+        <td style="height: 21.5px;" bgcolor="#dedede">0.45</td>
+        <td style="height: 21.5px;">47</td>
+        <td style="height: 21.5px;" bgcolor="#dedede">0.78</td>
+      </tr>
+      <tr style="height: 21px;">
+        <td style="height: 21px;">8</td>
+        <td style="height: 21px;" bgcolor="#dedede">0.13</td>
+        <td style="height: 21px;">28</td>
+        <td style="height: 21px;" bgcolor="#dedede">0.47</td>
+        <td style="height: 21px;">48</td>
+        <td style="height: 21px;" bgcolor="#dedede">0.80</td>
+      </tr>
+      <tr style="height: 21px;">
+        <td style="height: 21px;">9</td>
+        <td style="height: 21px;" bgcolor="#dedede">0.15</td>
+        <td style="height: 21px;">29</td>
+        <td style="height: 21px;" bgcolor="#dedede">0.48</td>
+        <td style="height: 21px;">49</td>
+        <td style="height: 21px;" bgcolor="#dedede">0.82</td>
+      </tr>
+      <tr style="height: 21px;">
+        <td style="height: 21px;">10</td>
+        <td style="height: 21px;" bgcolor="#dedede">0.17</td>
+        <td style="height: 21px;">30</td>
+        <td style="height: 21px;" bgcolor="#dedede">0.50</td>
+        <td style="height: 21px;">50</td>
+        <td style="height: 21px;" bgcolor="#dedede">0.83</td>
+      </tr>
+      <tr style="height: 21px;">
+        <td style="height: 21px;">11</td>
+        <td style="height: 21px;" bgcolor="#dedede">0.18</td>
+        <td style="height: 21px;">31</td>
+        <td style="height: 21px;" bgcolor="#dedede">0.52</td>
+        <td style="height: 21px;">51</td>
+        <td style="height: 21px;" bgcolor="#dedede">0.85</td>
+      </tr>
+      <tr style="height: 21px;">
+        <td style="height: 21px;">12</td>
+        <td style="height: 21px;" bgcolor="#dedede">0.20</td>
+        <td style="height: 21px;">32</td>
+        <td style="height: 21px;" bgcolor="#dedede">0.53</td>
+        <td style="height: 21px;">52</td>
+        <td style="height: 21px;" bgcolor="#dedede">0.87</td>
+      </tr>
+      <tr style="height: 21px;">
+        <td style="height: 21px;">13</td>
+        <td style="height: 21px;" bgcolor="#dedede">0.22</td>
+        <td style="height: 21px;">33</td>
+        <td style="height: 21px;" bgcolor="#dedede">0.55</td>
+        <td style="height: 21px;">53</td>
+        <td style="height: 21px;" bgcolor="#dedede">0.88</td>
+      </tr>
+      <tr style="height: 21px;">
+        <td style="height: 21px;">14</td>
+        <td style="height: 21px;" bgcolor="#dedede">0.23</td>
+        <td style="height: 21px;">34</td>
+        <td style="height: 21px;" bgcolor="#dedede">0.57</td>
+        <td style="height: 21px;">54</td>
+        <td style="height: 21px;" bgcolor="#dedede">0.90</td>
+      </tr>
+      <tr style="height: 21px;">
+        <td style="height: 21px;">15</td>
+        <td style="height: 21px;" bgcolor="#dedede">0.25</td>
+        <td style="height: 21px;">35</td>
+        <td style="height: 21px;" bgcolor="#dedede">0.58</td>
+        <td style="height: 21px;">55</td>
+        <td style="height: 21px;" bgcolor="#dedede">0.92</td>
+      </tr>
+      <tr style="height: 21px;">
+        <td style="height: 21px;">16</td>
+        <td style="height: 21px;" bgcolor="#dedede">0.27</td>
+        <td style="height: 21px;">36</td>
+        <td style="height: 21px;" bgcolor="#dedede">0.60</td>
+        <td style="height: 21px;">56</td>
+        <td style="height: 21px;" bgcolor="#dedede">0.93</td>
+      </tr>
+      <tr style="height: 21px;">
+        <td style="height: 21px;">17</td>
+        <td style="height: 21px;" bgcolor="#dedede">0.28</td>
+        <td style="height: 21px;">37</td>
+        <td style="height: 21px;" bgcolor="#dedede">0.62</td>
+        <td style="height: 21px;">57</td>
+        <td style="height: 21px;" bgcolor="#dedede">0.95</td>
+      </tr>
+      <tr style="height: 21px;">
+        <td style="height: 21px;">18</td>
+        <td style="height: 21px;" bgcolor="#dedede">0.30</td>
+        <td style="height: 21px;">38</td>
+        <td style="height: 21px;" bgcolor="#dedede">0.63</td>
+        <td style="height: 21px;">58</td>
+        <td style="height: 21px;" bgcolor="#dedede">0.97</td>
+      </tr>
+      <tr style="height: 21px;">
+        <td style="height: 21px;">19</td>
+        <td style="height: 21px;" bgcolor="#dedede">0.32</td>
+        <td style="height: 21px;">39</td>
+        <td style="height: 21px;" bgcolor="#dedede">0.65</td>
+        <td style="height: 21px;">59</td>
+        <td style="height: 21px;" bgcolor="#dedede">0.98</td>
+      </tr>
+      <tr style="height: 21px;">
+        <td style="height: 21px;">20</td>
+        <td style="height: 21px;" bgcolor="#dedede">0.33</td>
+        <td style="height: 21px;">40</td>
+        <td style="height: 21px;" bgcolor="#dedede">0.67</td>
+        <td style="height: 21px;">60</td>
+        <td style="height: 21px;" bgcolor="#dedede">1.00</td>
+      </tr>
+    </tbody>
+  </table>
+
+
+  <script>
+    // Vi lytter efter 'enter' og udfører tidImellem når der trykkes
+    document.body.addEventListener('keyup', function(e) {
+      if (e.keyCode == 13) {
+        tidImellem();
+      }
+    });
+    
+    // Vi lytter efter '+' knappen. Når der trykkes så bliver alle tidspunkterne slettet, og der fokuseres på planlagt starttid
+    document.body.addEventListener('keyup', function(e) {
+      if (e.keyCode == 107) {
+        document.getElementById("startStart").value = "";
+        document.getElementById("startSlut").value = "";
+        document.getElementById("slutStart").value = "";
+        document.getElementById("slutSlut").value = "";
+        document.getElementById("startStart").focus();
+        
+      }
+    });
+    
+    //Denne funktion tjekker om tidspunktet der er tastet et rigtig formateret. Hvis ikke, så laver den feltet rødt.
+    function checkTidspunkt(tid, hvor) {
+      var findHtml = document.getElementById(tid).value;
+      if (findHtml != "") {
+        if (/^(0[0-9]|1[0-9]|2[0-3]),[0-5][0-9]$/.test(findHtml)) {
+          document.getElementById(tid).style.borderColor = "grey";
+          document.getElementById(tid).style.backgroundColor = "white";
+        } else {
+          document.getElementById(tid).style.borderColor = "red";
+          document.getElementById(tid).style.backgroundColor = "#ffbdbd";
+          document.getElementById(tid).setCustomValidity('Tid ikke formateret ordentligt');
+          throw new Error("Tid ikke formateret ordentligt!");
+        }
+      } else {}
+    }
+
+    function tidImellem() {
+      //Vi tjekker om alt er formateret rigtigt
+      checkTidspunkt("startStart", "planlagt starttid");
+      checkTidspunkt("startSlut", "faktisk starttid");
+      checkTidspunkt("slutStart", "planlagt sluttid");
+      checkTidspunkt("slutSlut", "faktisk sluttid");
+      
+      //Første her er til mødetiden.
+      var parseStartStart = document.getElementById("startStart").value.split(",");
+      var parseStartSlut = document.getElementById("startSlut").value.split(",");
+      
+      //beregner forskellen.
+      var startStartDate = new Date(1, 1, 1, parseStartStart[0], parseStartStart[1], 0); //begindate
+      var startSlutDate = new Date(1, 1, 1, parseStartSlut[0], parseStartSlut[1], 0); //enddate
+
+      //den første er til mødetiden.
+      if (startSlutDate > startStartDate) {
+        var modehourDifference = startSlutDate.getHours() - startStartDate.getHours();
+        var modeminuteDifference = startSlutDate.getMinutes() - startStartDate.getMinutes();
+      } else {
+        var modehourDifference = startStartDate.getHours() - startSlutDate.getHours();
+        var modeminuteDifference = startStartDate.getMinutes() - startSlutDate.getMinutes();
+      }
+
+      //mødetiden.
+      if (modeminuteDifference < 0) {
+        modeminuteDifference += 60;
+        modehourDifference--;
+      }
+
+      //her skriver den til HTMLen.
+      document.getElementById("timermode").innerHTML = modehourDifference + " timer og ";
+      document.getElementById("minuttermode").innerHTML = modeminuteDifference + " minutter";
+
+
+      //denne variable regner decimalminutterne ud fra timer og minutter.
+      var startdecimaler = (startStartDate.getHours() - startSlutDate.getHours()) + ((startStartDate.getMinutes() - startSlutDate.getMinutes()) / 60);
+
+      //SLUTTIDEN
+      //Finder elementerne.
+      var parseSlutStart = document.getElementById("slutStart").value.split(",");
+      var parseSlutSlut = document.getElementById("slutSlut").value.split(",");
+
+      //Beregner forskellen.
+      var slutStartDate = new Date(1, 1, 1, parseSlutStart[0], parseSlutStart[1], 0);
+      var slutSlutDate = new Date(1, 1, 1, parseSlutSlut[0], parseSlutSlut[1], 0);
+      console.log(slutSlutDate.getHours() + ":" + slutSlutDate.getMinutes());
+
+      //Finder tiderne. pas har ingen ide om hvad der sker lol.
+      if (slutSlutDate > slutStartDate) {
+        var gaahourDifference = slutSlutDate.getHours() - slutStartDate.getHours();
+        var gaaminuteDifference = slutSlutDate.getMinutes() - slutStartDate.getMinutes();
+      } else {
+        var gaahourDifference = slutStartDate.getHours() - slutSlutDate.getHours();
+        var gaaminuteDifference = slutStartDate.getMinutes() - slutSlutDate.getMinutes();
+      } 
+
+      //Her finder den ud af om minutter overskrider 60. hvis ja så ligger den 1 på timer. giver ret god mening tbh.
+      if (gaaminuteDifference < 0) {
+        gaaminuteDifference += 60;
+        gaahourDifference--;
+      }
+
+      //her skriver den til HTMLen.
+      document.getElementById("timerImellem").innerHTML = gaahourDifference + " timer og ";
+      document.getElementById("minutterImellem").innerHTML = gaaminuteDifference + " minutter";
+
+      //denne variable regner decimalminutterne ud fra timer og minutter.
+      var gaadecimaler = (slutSlutDate.getHours() - slutStartDate.getHours()) + ((slutSlutDate.getMinutes() - slutStartDate.getMinutes()) / 60);
+
+      if (startdecimaler !== startdecimaler) {
+        var endelige = gaadecimaler;
+      } else if (gaadecimaler !== gaadecimaler) {
+        var endelige = startdecimaler;
+      } else {
+        var endelige = (startdecimaler) + (gaadecimaler);
+      }
+
+      console.log(startdecimaler, gaadecimaler);
+      console.log(endelige.toFixed(2));
+
+      //Vi tjekker hvilken afdeling der skal beregnes på.
+      var HRT = document.getElementById("HRT");
+      var FAT = document.getElementById("FAT");
+      
+      if (HRT.checked) {
+        if (endelige <= 1) {
+          if (endelige < -1) {
+            document.getElementById("fleks").innerHTML = "-1.00";
+            document.getElementById("overarbejde").innerHTML = "0.00";
+            document.getElementById("fravaerstart").innerHTML = slutSlutDate.getHours() + ":" + slutSlutDate.getMinutes();
+            slutStartDate.setTime(slutStartDate.getTime() - 60 * 60 * 1000);
+            document.getElementById("fravaerslut").innerHTML = slutStartDate.getHours() + ":" + slutStartDate.getMinutes();
+          } else {
+            document.getElementById("fleks").innerHTML = endelige.toFixed(2);
+            document.getElementById("overarbejde").innerHTML = "0.00";
+            document.getElementById("fravaerstart").innerHTML = "";
+            document.getElementById("fravaerslut").innerHTML = "";
+          }
+        } else if (endelige > 1) { //ellers så skal bare indsætte 1 på fleks, og så tage decimalminutterne og indsætte på overarbejde, bare minus 1.
+          document.getElementById("fleks").innerHTML = "1.00";
+          document.getElementById("overarbejde").innerHTML = (endelige - 1).toFixed(2);
+          document.getElementById("fravaerstart").innerHTML = "";
+          document.getElementById("fravaerslut").innerHTML = "";
+        } else { //og hvis der er fejl, så skal den melde fejl.
+          document.getElementById("fleks").innerHTML = "fejl";
+          document.getElementById("overarbejde").innerHTML = "fejl";
+          document.getElementById("fravaerstart").innerHTML = "";
+          document.getElementById("fravaerslut").innerHTML = "";
+          document.getElementById("timermode").innerHTML = "0 timer og ";
+          document.getElementById("minuttermode").innerHTML = "0 minutter";
+          document.getElementById("timerImellem").innerHTML = "0 timer og ";
+          document.getElementById("minutterImellem").innerHTML = "0 minutter";
+        }
+      } else if (FAT.checked) {
+        if (endelige <= 1.5) {
+          if (endelige < -1.5) {
+            document.getElementById("fleks").innerHTML = "-1.50";
+            document.getElementById("overarbejde").innerHTML = "0.00";
+            document.getElementById("fravaerstart").innerHTML = slutSlutDate.getHours() + ":" + slutSlutDate.getMinutes();
+            slutStartDate.setTime(slutStartDate.getTime() - 90 * 60 * 1000);
+            document.getElementById("fravaerslut").innerHTML = slutStartDate.getHours() + ":" + slutStartDate.getMinutes();
+          } else {
+            document.getElementById("fleks").innerHTML = endelige.toFixed(2);
+            document.getElementById("overarbejde").innerHTML = "0.00";
+            document.getElementById("fravaerstart").innerHTML = "";
+            document.getElementById("fravaerslut").innerHTML = "";
+          }
+        } else if (endelige > 1.5) { //ellers så skal bare indsætte 1 på fleks, og så tage decimalminutterne og indsætte på overarbejde, bare minus 1.
+          document.getElementById("fleks").innerHTML = "1.50";
+          document.getElementById("overarbejde").innerHTML = (endelige - 1.5).toFixed(2);
+          document.getElementById("fravaerstart").innerHTML = "";
+          document.getElementById("fravaerslut").innerHTML = "";
+        } else { //og hvis der er fejl, så skal den melde fejl.
+          document.getElementById("fleks").innerHTML = "fejl";
+          document.getElementById("overarbejde").innerHTML = "fejl";
+          document.getElementById("fravaerstart").innerHTML = "";
+          document.getElementById("fravaerslut").innerHTML = "";
+          document.getElementById("timermode").innerHTML = "0 timer og ";
+          document.getElementById("minuttermode").innerHTML = "0 minutter";
+          document.getElementById("timerImellem").innerHTML = "0 timer og ";
+          document.getElementById("minutterImellem").innerHTML = "0 minutter";
+        }
+      } else {
+        //Advarer brugeren om at der ikke er valgt en afdeling.
+        alert("Der er ikke valgt en afdeling");
+        throw new Error("Ingen afdeling!");
+      }
+
+      console.log(endelige > 2);
+
+      console.log(endelige.toFixed(2));
+
+      return (new Array(gaahourDifference, gaaminuteDifference));
+    }
+  </script>
+
+</body>
+
+</html>
